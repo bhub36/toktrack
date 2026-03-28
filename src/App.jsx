@@ -19,6 +19,7 @@ const fmtMoney = (n) => "$" + (n||0).toLocaleString();
 const CLIENT_KEY = import.meta.env.VITE_TIKTOK_CLIENT_KEY;
 const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI || "http://localhost:5173/auth/callback";
 const SCOPES = "user.info.basic,video.list,creator.info.basic";
+const PROXY = import.meta.env.VITE_PROXY_URL || "http://localhost:3001";
 
 function buildAuthURL() {
   const state = crypto.randomUUID();
@@ -36,7 +37,7 @@ function buildAuthURL() {
 // NOTE: Token exchange MUST happen server-side to protect your Client Secret.
 // This function calls a small local proxy you'll run (see instructions below).
 async function exchangeCodeForToken(code) {
-  const res = await fetch("http://localhost:3001/auth/token", {
+  const res = await fetch(`${PROXY}/auth/token`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ code, redirect_uri: REDIRECT_URI }),
@@ -46,7 +47,7 @@ async function exchangeCodeForToken(code) {
 }
 
 async function fetchTikTokUser(accessToken, openId) {
-  const res = await fetch("http://localhost:3001/tiktok/user", {
+  const res = await fetch(`${PROXY}/tiktok/user`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ access_token: accessToken, open_id: openId }),
@@ -56,7 +57,7 @@ async function fetchTikTokUser(accessToken, openId) {
 }
 
 async function fetchTikTokVideos(accessToken, openId) {
-  const res = await fetch("http://localhost:3001/tiktok/videos", {
+  const res = await fetch(`${PROXY}/tiktok/videos`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ access_token: accessToken, open_id: openId }),
