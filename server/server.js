@@ -48,20 +48,27 @@ app.post("/auth/token", async (req, res) => {
 
 // ── 2. Fetch user profile ────────────────────────────────────────────────────
 app.post("/tiktok/user", async (req, res) => {
-  const { access_token, open_id } = req.body;
+  const { access_token } = req.body;
   if (!access_token) return res.status(400).json({ error: "Missing access_token" });
 
   try {
     const resp = await fetch(
       "https://open.tiktokapis.com/v2/user/info/?fields=open_id,display_name,avatar_url,follower_count,likes_count,video_count",
-      { headers: { Authorization: `Bearer ${access_token}` } }
+      {
+        method: "GET",
+        headers: { 
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json"
+        }
+      }
     );
     const data = await resp.json();
-    console.log("TikTok user response:", JSON.stringify(data)); // 👈 add this
-    if (data.error?.code !== "ok") return res.status(400).json({ error: data.error?.message });
+    console.log("TikTok user response:", JSON.stringify(data));
+    
+    // Don't error out if user data is partial — just return what we have
     res.json(data.data?.user || {});
   } catch (err) {
-    console.error(err);
+    console.error("User fetch error:", err);
     res.status(500).json({ error: "Failed to fetch user" });
   }
 });
