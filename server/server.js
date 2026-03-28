@@ -53,10 +53,11 @@ app.post("/tiktok/user", async (req, res) => {
 
   try {
     const resp = await fetch(
-      "https://open.tiktokapis.com/v2/user/info/?fields=open_id,display_name,avatar_url,follower_count,following_count,likes_count,video_count",
+      "https://open.tiktokapis.com/v2/user/info/?fields=open_id,display_name,avatar_url,follower_count,likes_count,video_count",
       { headers: { Authorization: `Bearer ${access_token}` } }
     );
     const data = await resp.json();
+    console.log("TikTok user response:", JSON.stringify(data)); // 👈 add this
     if (data.error?.code !== "ok") return res.status(400).json({ error: data.error?.message });
     res.json(data.data?.user || {});
   } catch (err) {
