@@ -9,7 +9,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors());
 app.use(express.json());
 
 const CLIENT_KEY    = process.env.TIKTOK_CLIENT_KEY;
