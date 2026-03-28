@@ -18,7 +18,7 @@ const fmtMoney = (n) => "$" + (n||0).toLocaleString();
 
 const CLIENT_KEY = import.meta.env.VITE_TIKTOK_CLIENT_KEY;
 const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI || "http://localhost:5173/auth/callback";
-const SCOPES = "user.info.basic,video.list,creator.info.basic";
+const SCOPES = "user.info.basic,video.list";
 const PROXY = import.meta.env.VITE_PROXY_URL || "http://localhost:3001";
 
 function buildAuthURL() {
