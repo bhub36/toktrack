@@ -17,7 +17,7 @@ const fmtMoney = (n) => "$" + (n||0).toLocaleString();
 // ─── TikTok OAuth helpers ────────────────────────────────────────────────────
 
 const CLIENT_KEY = import.meta.env.VITE_TIKTOK_CLIENT_KEY;
-const REDIRECT_URI = "http://localhost:5173/auth/callback";
+const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI || "http://localhost:5173/auth/callback";
 const SCOPES = "user.info.basic,video.list,creator.info.basic";
 
 function buildAuthURL() {
