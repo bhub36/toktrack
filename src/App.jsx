@@ -315,7 +315,7 @@ export default function App() {
       <div style={{ borderBottom: `1px solid ${BORDER}`, padding: "0 32px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64, position: "sticky", top: 0, background: "rgba(10,10,15,0.95)", backdropFilter: "blur(12px)", zIndex: 50 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ width: 32, height: 32, borderRadius: 8, background: ACCENT, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>♪</div>
-          <span style={{ fontWeight: 800, fontSize: 18, letterSpacing: -0.5 }}>TokTrack</span>
+          <span style={{ fontWeight: 800, fontSize: 18, letterSpacing: -0.5 }}>BrandManager</span>
           <span style={{ fontSize: 11, background: "#1E1E2E", color: "#666", padding: "2px 8px", borderRadius: 20, fontFamily: "monospace" }}>PRO</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
