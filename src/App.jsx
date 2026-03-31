@@ -352,7 +352,7 @@ export default function App() {
 
   useEffect(() => {
     const token = sessionStorage.getItem("tt_token");
-    if (token && authState === "idle") {
+    if (token && authState === "idle" && !window.location.search.includes("code=")) {
       setAuthState("loading");
       Promise.all([fetchTikTokUser(token), fetchTikTokVideos(token)])
         .then(([user, rawVideos]) => {
@@ -444,7 +444,12 @@ export default function App() {
           {connected ? (
             <>
               <button onClick={() => setShowAdd(true)} style={{ padding: "8px 18px", borderRadius: 10, background: ACCENT, border: "none", color: "#fff", fontWeight: 700, cursor: "pointer", fontSize: 13 }}>+ Add Video</button>
-              <button onClick={() => { sessionStorage.clear(); setAuthState("idle"); setTtUser(null); setVideos(MOCK_VIDEOS); }}
+              <button onClick={() => { sessionStorage.removeItem("tt_token");
+                  sessionStorage.removeItem("tt_open_id");
+                  sessionStorage.removeItem("tt_state");
+                  setAuthState("idle");
+                  setTtUser(null);
+                  setVideos(MOCK_VIDEOS);}}
                 style={{ padding: "8px 14px", borderRadius: 10, background: CARD2, border: `1px solid ${BORDER}`, color: "#666", cursor: "pointer", fontSize: 13 }}>Disconnect</button>
             </>
           ) : (
