@@ -18,6 +18,9 @@ const REDIRECT_URI = import.meta.env.VITE_REDIRECT_URI || "http://localhost:5173
 const PROXY        = import.meta.env.VITE_PROXY_URL    || "http://localhost:3001";
 const SCOPES       = "user.info.basic,video.list";
 
+let callbackBootstrapInFlight = false;
+let sessionBootstrapInFlight = false;
+
 function buildAuthURL() {
   const state = crypto.randomUUID();
   sessionStorage.setItem("tt_state", state);
@@ -287,7 +290,15 @@ function AddVideoModal({ onClose, onAdd }) {
           <button onClick={onClose} style={{ flex: 1, padding: "12px", background: "none", border: `1px solid ${BORDER}`, borderRadius: 10, color: "#888", cursor: "pointer", fontSize: 14 }}>Cancel</button>
           <button onClick={() => {
             if (!form.title || !form.brand) return;
-            onAdd({ ...form, id: Date.now().toString(), views: +form.views||0, likes: +form.likes||0, comments: +form.comments||0, shares: +form.shares||0, earnings: +form.earnings||0 });
+            onAdd({
+              ...form,
+              id: Date.now().toString(),
+              views: +form.views || 0,
+              likes: +form.likes || 0,
+              comments: +form.comments || 0,
+              shares: +form.shares || 0,
+              earnings: form.isSample ? 0 : (+form.earnings || 0),
+            });
             onClose();
           }} style={{ flex: 2, padding: "12px", background: ACCENT, border: "none", borderRadius: 10, color: "#fff", fontWeight: 700, cursor: "pointer", fontSize: 14 }}>Add Video</button>
         </div>
@@ -334,7 +345,9 @@ export default function App() {
     const state = params.get("state");
     const savedState = sessionStorage.getItem("tt_state");
     if (!code) return;
-    window.history.replaceState({}, "", "/");
+    if (callbackBootstrapInFlight) return;
+    callbackBootstrapInFlight = true;
+    window.history.replaceState({}, "", window.location.pathname);
     if (state !== savedState) { setAuthError("State mismatch. Please try again."); setAuthState("error"); return; }
     setAuthState("loading");
     (async () => {
@@ -347,12 +360,15 @@ export default function App() {
         setVideos(mapped.length > 0 ? mapped : MOCK_VIDEOS);
         setAuthState("connected");
       } catch (err) { setAuthError(err.message); setAuthState("error"); }
+      finally { callbackBootstrapInFlight = false; }
     })();
   }, []);
 
   useEffect(() => {
     const token = sessionStorage.getItem("tt_token");
     if (token && authState === "idle" && !window.location.search.includes("code=")) {
+      if (sessionBootstrapInFlight) return;
+      sessionBootstrapInFlight = true;
       setAuthState("loading");
       Promise.all([fetchTikTokUser(token), fetchTikTokVideos(token)])
         .then(([user, rawVideos]) => {
@@ -361,7 +377,13 @@ export default function App() {
           setVideos(mapped.length > 0 ? mapped : MOCK_VIDEOS);
           setAuthState("connected");
         })
-        .catch(() => { sessionStorage.clear(); setAuthState("idle"); });
+        .catch(() => {
+          sessionStorage.removeItem("tt_token");
+          sessionStorage.removeItem("tt_open_id");
+          sessionStorage.removeItem("tt_state");
+          setAuthState("idle");
+        })
+        .finally(() => { sessionBootstrapInFlight = false; });
     }
   }, []);
 
