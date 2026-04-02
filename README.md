@@ -1,16 +1,66 @@
-# React + Vite
+# TokTrack
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+TokTrack is a Vite + React app for tracking TikTok brand partnerships, gifted campaigns, and manual video entries.
 
-Currently, two official plugins are available:
+## Local setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Install dependencies:
 
-## React Compiler
+```bash
+npm install
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Run the frontend:
 
-## Expanding the ESLint configuration
+```bash
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Run the TikTok proxy:
+
+```bash
+cd server
+npm install
+node server.js
+```
+
+## Supabase setup
+
+TokTrack now supports persistent storage for:
+
+- saved brands in the Brands tab
+- manual video entries
+- edited metadata for TikTok-synced videos
+
+### 1. Create the database schema
+
+In Supabase SQL Editor, run:
+
+[`supabase/schema.sql`](/Users/a036770/Work/ttshop/toktrack/supabase/schema.sql)
+
+### 2. Add frontend env vars
+
+Create `.env.local` in the project root:
+
+```bash
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
+VITE_TIKTOK_CLIENT_KEY=your_tiktok_client_key
+VITE_REDIRECT_URI=http://localhost:5173/auth/callback
+VITE_PROXY_URL=http://localhost:3001
+```
+
+### 3. Add proxy env vars
+
+Create `server/.env`:
+
+```bash
+TIKTOK_CLIENT_KEY=your_tiktok_client_key
+TIKTOK_CLIENT_SECRET=your_tiktok_client_secret
+PORT=3001
+```
+
+## Notes
+
+- If Supabase env vars are missing, the app still works in local-only mode with in-memory data.
+- The supplied Supabase schema uses open anon policies for a quick prototype. Tighten RLS before using this in production.
